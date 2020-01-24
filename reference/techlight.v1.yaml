@@ -66,6 +66,11 @@ paths:
                     type: integer
                   errorDescription:
                     type: string
+              examples:
+                General Controller Error:
+                  value:
+                    error: 500
+                    errorDescription: 'General Controller error, please see manual for error 500'
       operationId: get-v1-controllerState-deviceId
       description: "Get the controller's current state, including connected devices. \n\nConnected device ID's start at zero and increment up to the theoretical maximum of 50 devices. "
       security:
@@ -96,6 +101,11 @@ paths:
                     type: integer
                   errorDescription:
                     type: string
+              examples:
+                General controller error:
+                  value:
+                    error: 500
+                    errorDescription: 'General Controller error, please see manual for error 500'
       operationId: post-v1-deviceState
       parameters: []
       description: "Set an individual device's state. "
@@ -154,6 +164,20 @@ paths:
         '500':
           description: Internal Server Error
           headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: integer
+                  errorDescription:
+                    type: string
+              examples:
+                General controller error:
+                  value:
+                    error: 500
+                    errorDescription: 'General Controller error, please see manual for error 500'
       description: "Get an individual device state from a controller by id. \n\n/deviceState/{deviceId}"
       requestBody: {}
       security:
@@ -173,6 +197,20 @@ paths:
           description: deviceID Not Found
         '500':
           description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: integer
+                  errorDescription:
+                    type: string
+              examples:
+                General controller error:
+                  value:
+                    error: 500
+                    errorDescription: 'General Controller error, please see manual for error 500'
       operationId: post-v1-deviceGroupState
       requestBody:
         content:
