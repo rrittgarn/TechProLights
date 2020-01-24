@@ -241,6 +241,131 @@ paths:
       description: "Set a group of device ID's to the same brightness"
       security:
         - Bearer Token: []
+  /v1/setControllerPushURL:
+    post:
+      summary: Set controller push notification URL
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  previousURL:
+                    type: string
+                    description: Previous Push URL (if present)
+                  currentURL:
+                    type: string
+                    description: New URL now configured on the device
+                  urlResponds:
+                    type: boolean
+                    description: 'The controller tests the url to see if it responds with a specific test URL '
+              examples:
+                First time set:
+                  value:
+                    previousURL: null
+                    newURL: 'http://192.168.0.33'
+                    urlResponds: true
+                Reset Existing:
+                  value:
+                    previousURL: 'http://192.168.1.5'
+                    newURL: 'http://192.168.0.33'
+                    urlResponds: true
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: integer
+                  errorDescription:
+                    type: string
+              examples:
+                Generic Error:
+                  value:
+                    error: '500'
+                    errorDescription: Generic System Error
+      operationId: post-v1-setControllerPushURL
+      description: 'Set the URL that this controller will post back motion events to for tracking. '
+      security:
+        - Bearer Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  pattern: "^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"
+                pushFreqency:
+                  type: string
+                  default: realtime
+                  enum:
+                    - realtime
+                    - '1'
+                    - '2'
+                    - '3'
+                    - '4'
+                    - '5'
+                useSerialKey:
+                  type: boolean
+                  default: true
+                  description: Should only be set to false for debugging / development. NOT recommended for production
+              required:
+                - url
+            examples:
+              setLocalServer:
+                value:
+                  url: 'https://192.1268.0.1/posturl'
+                  pushfrequency: realtime
+        description: ''
+  '/v1/getMotionStatus/{deviceId}':
+    get:
+      summary: Get optional motion detector seconds since last trigger
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/motionEvent'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: integer
+                  errorDescription:
+                    type: string
+      operationId: get-v1-getMotionStatus
+      security:
+        - Bearer Token: []
+      requestBody: {}
+      description: "Get the requested deviceId's motion detector's last event time"
+    parameters:
+      - schema:
+          type: integer
+        name: deviceId
+        in: path
+        required: true
 components:
   schemas:
     device:
@@ -258,6 +383,24 @@ components:
           deviceId: '7'
           deviceState: '100'
           deviceMinBright: '10'
+    motionEvent:
+      title: motionEvent
+      type: object
+      x-examples:
+        Event Example:
+          deviceId: 2
+          controllerKey: d8e8fca2dc0f896fd7cb4cb0031ba249
+          eventTime: 1579901860
+      properties:
+        deviceId:
+          type: integer
+          description: Device ID of the device that detected motion
+        controllerKey:
+          type: string
+          description: API Key normally  used for inbound access (md5sum of serial number)
+        lastEventTime:
+          description: 'Prefer unix timestamp of event time, however if we have to do based on uptime, we can compensate'
+          type: integer
   securitySchemes:
     Bearer Token:
       name: Bearer Token
