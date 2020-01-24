@@ -1,0 +1,228 @@
+openapi: 3.0.0
+info:
+  title: techLight
+  version: '1.0'
+  contact:
+    name: TechPro Support
+    url: www.techpro.com
+    email: support@techpro.com
+  termsOfService: 'https://www.techpro.com/tos.html'
+  description: 'API for controlling TechPro linked lighting. '
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /v1/controllerState:
+    parameters: []
+    get:
+      summary: Get controller state
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deviceDelta:
+                    type: integer
+                    description: Percentage changes applied on increment and decrement functions
+                  attachedDevices:
+                    type: array
+                    maxItems: 50
+                    minItems: 1
+                    description: Array of attached devices
+                    items:
+                      description: Connected Light device
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/device'
+              examples:
+                1 Device Example:
+                  value:
+                    status: '200'
+                    statusDescription: OK
+                    deviceDelta: '5'
+                    attachedDevices:
+                      deviceId: '0'
+                      deviceState: '100'
+                      deviceMinBright: '10'
+                    device:
+                      deviceId: '7'
+                      deviceState: '100'
+                      deviceMinBright: '10'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: integer
+                  errorDescription:
+                    type: string
+      operationId: get-v1-controllerState-deviceId
+      description: "Get the controller's current state, including connected devices. "
+      security:
+        - Bearer Token: []
+  '/v1/deviceState/{deviceId}':
+    post:
+      summary: Set individual device state
+      tags: []
+      responses:
+        '200':
+          description: OK
+          headers: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Endpoint Not Found
+        '500':
+          description: Internal Server Error
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: integer
+                  errorDescription:
+                    type: string
+      operationId: post-v1-deviceState
+      parameters: []
+      description: "Set an individual device's state. "
+      security:
+        - Bearer Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                desiredBrightness:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                  description: Percentage of brightness
+                deviceId:
+                  type: integer
+                  minimum: 0
+                  maximum: 50
+                  description: Controller specific device ID
+            examples:
+              '100% Brightness':
+                value:
+                  deviceId: 7
+                  desiredBrightness: 100
+    parameters:
+      - schema:
+          type: integer
+        name: deviceId
+        in: path
+        required: true
+        description: Controller specific device ID (returned from get controllerState)
+    get:
+      summary: Get individual device state
+      operationId: get-v1-deviceState
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/device'
+              examples:
+                example-1:
+                  value:
+                    deviceId: '7'
+                    deviceState: '100'
+                    deviceMinBright: '10'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Endpoint Not Found
+        '500':
+          description: Internal Server Error
+          headers: {}
+      description: "Get an individual device state from a controller by id. \n\n/deviceState/{deviceId}"
+      requestBody: {}
+      security:
+        - Bearer Token: []
+  /v1/deviceGroupState:
+    post:
+      summary: Set group of devices state
+      tags: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: deviceID Not Found
+        '500':
+          description: Internal Server Error
+      operationId: post-v1-deviceGroupState
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                desiredBrightness:
+                  type: integer
+                deviceIDs:
+                  type: array
+                  items:
+                    type: integer
+            examples:
+              'Three lights 100%':
+                value:
+                  desiredBrightness: 100
+                  deviceIDs:
+                    - 1
+                    - 2
+                    - 3
+              'Two lights 0% (off)':
+                value:
+                  desiredBrightness: 0
+                  deviceIDs:
+                    - 1
+                    - 3
+      description: "Set a group of device ID's to the same brightness"
+      security:
+        - Bearer Token: []
+components:
+  schemas:
+    device:
+      title: device
+      type: object
+      properties:
+        deviceId:
+          type: integer
+        deviceState:
+          type: integer
+        deviceMinBright:
+          type: integer
+      x-examples:
+        Single Device:
+          deviceId: '7'
+          deviceState: '100'
+          deviceMinBright: '10'
+  securitySchemes:
+    Bearer Token:
+      name: Bearer Token
+      type: apiKey
+      in: header
+      description: md5Sum of Controller Serial Number provides authentication
