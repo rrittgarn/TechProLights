@@ -7,7 +7,7 @@ info:
     url: www.techpro.com
     email: support@techpro.com
   termsOfService: 'https://www.techpro.com/tos.html'
-  description: 'API for controlling TechPro linked lighting. '
+  description: API for controlling TechPro linked lighting.
 servers:
   - url: 'http://localhost:3000'
 paths:
@@ -67,7 +67,7 @@ paths:
                   errorDescription:
                     type: string
       operationId: get-v1-controllerState-deviceId
-      description: "Get the controller's current state, including connected devices. "
+      description: "Get the controller's current state, including connected devices. \n\nConnected device ID's start at zero and increment up to the theoretical maximum of 50 devices. "
       security:
         - Bearer Token: []
   '/v1/deviceState/{deviceId}':
