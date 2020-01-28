@@ -15,7 +15,9 @@ paths:
     parameters: []
     get:
       summary: Get controller state
-      tags: []
+      tags:
+        - Basic IO
+        - ''
       responses:
         '200':
           description: OK
@@ -78,7 +80,8 @@ paths:
   '/v1/deviceState/{deviceId}':
     post:
       summary: Set individual device state
-      tags: []
+      tags:
+        - Basic IO
       responses:
         '200':
           description: OK
@@ -182,10 +185,13 @@ paths:
       requestBody: {}
       security:
         - Bearer Token: []
+      tags:
+        - Basic IO
   /v1/deviceGroupState:
     post:
       summary: Set group of devices state
-      tags: []
+      tags:
+        - Basic IO
       responses:
         '200':
           description: OK
@@ -244,7 +250,8 @@ paths:
   /v1/setControllerPushURL:
     post:
       summary: Set controller push notification URL
-      tags: []
+      tags:
+        - Advanced Features
       responses:
         '200':
           description: OK
@@ -332,7 +339,8 @@ paths:
   '/v1/getMotionStatus/{deviceId}':
     get:
       summary: Get optional motion detector seconds since last trigger
-      tags: []
+      tags:
+        - Advanced Features
       responses:
         '200':
           description: OK
