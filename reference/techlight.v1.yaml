@@ -391,6 +391,8 @@ components:
           deviceId: '7'
           deviceState: '100'
           deviceMinBright: '10'
+      x-tags:
+        - Data Structures
     motionEvent:
       title: motionEvent
       type: object
@@ -409,6 +411,8 @@ components:
         lastEventTime:
           description: 'Prefer unix timestamp of event time, however if we have to do based on uptime, we can compensate'
           type: integer
+      x-tags:
+        - Data Structures
   securitySchemes:
     Bearer Token:
       name: Bearer Token
